@@ -1,0 +1,53 @@
+﻿<Window x:Class="tailwin.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:tailwin"
+        Title="Tailwin" Height="350" Width="525">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Menu x:Name="MainMenu">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open" Click="mainmenuOpen_Click" ></MenuItem>
+                <Separator />
+                <MenuItem Header="_Exit" Click="mainmenuExit_Click"></MenuItem>
+            </MenuItem>
+        </Menu>
+        <Border x:Name="DragDropBorder" Grid.Row="1" Grid.Column="1" BorderThickness="1,1,1,1" Margin="10" AllowDrop="True" Drop="File_Drop">
+            <Border.BorderBrush>
+                <DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile">
+                    <DrawingBrush.Drawing>
+                        <DrawingGroup>
+                            <GeometryDrawing Brush="Black">
+                                <GeometryDrawing.Geometry>
+                                    <GeometryGroup>
+                                        <RectangleGeometry Rect="0,0,50,50" />
+                                        <RectangleGeometry Rect="50,50,50,50" />
+                                    </GeometryGroup>
+                                </GeometryDrawing.Geometry>
+                            </GeometryDrawing>
+                        </DrawingGroup>
+                    </DrawingBrush.Drawing>
+                </DrawingBrush>
+            </Border.BorderBrush>
+
+            <TextBlock Margin="5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <ContentControl>
+                    <TextBlock Text="Drop File Here" Padding="2000" FontSize="22" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0" UseLayoutRounding="False"/>
+                </ContentControl>
+            </TextBlock>
+        </Border>
+        <ScrollViewer x:Name="scrollOutput" Grid.Row="1" Grid.Column="0" Visibility="Hidden">
+            <i:Interaction.Behaviors>
+                <local:AutoScrollBehavior></local:AutoScrollBehavior>
+            </i:Interaction.Behaviors>
+            <TextBox x:Name="txtOutput" TextWrapping="WrapWithOverflow" ></TextBox>
+        </ScrollViewer>
+    </Grid>
+</Window>
