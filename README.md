@@ -1,5 +1,5 @@
 # tailwin
-Windows program for tailing files. Similar to unix tail command, but runs in Windows
+Windows program for watching changes appended to files. Great for log files!
 
 ## Features:
 - Drag-drop files onto window service to start tailing
@@ -7,9 +7,10 @@ Windows program for tailing files. Similar to unix tail command, but runs in Win
 - Add optional command line argument for skipping n lines (default 500)
 
 ## Installation
-Build, then copy tailwin\bin\release folder into c:\windows\system32 or another directory in your path.
-Rename your copy of the release folder "Tailwin" 
-Create a shortcut to tailwin.exe on your desktop
+- Download the latest release
+- Copy the folder into c:\windows\system32 or another directory in your path.
+- Rename the folder "tailwin" 
+- Create a shortcut to tailwin.exe on your desktop
 
 ## Requirements
 Requires .NET Framework 4
@@ -40,3 +41,6 @@ List last 50 lines of somefile.txt then display lines as the file is updated:
 ~~~
 tailwin somefile.txt 50
 ~~~
+
+## Give me More
+Looking for a command line-only option? Check out [tail](https://github.com/sharpguru/tail)
