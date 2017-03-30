@@ -44,6 +44,7 @@ namespace tailwin
         }
         private bool Streaming = false;
         private bool Stopped = true;
+        private int lastnlines = 500;
 
         public MainWindow()
         {
@@ -56,15 +57,23 @@ namespace tailwin
             if (args.Length > 1)
             {
                 filename = args[1];
+
+                if (args.Length > 2)
+                {
+                    int.TryParse(args[2], out lastnlines);
+                }
+
                 worker.RunWorkerAsync();
             }
+
+            
         }
 
         void worker_DoWork(object sender, DoWorkEventArgs e)
         {
             Streaming = true;
             Stopped = false;
-            streamFileToOutput(filename, 500);
+            streamFileToOutput(filename, lastnlines);
         }
 
         void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
