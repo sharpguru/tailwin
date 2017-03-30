@@ -27,11 +27,6 @@ From Windows: Open Tailwin, drag file onto window
 From Tailwin: Open Tailwin, Click on the File -> Open menu, select file to tail
 ~~~
 
-Display usage help text:
-~~~
-Tail
-~~~
-
 List entire contents of file then display lines as the file is updated:
 ~~~
 tailwin somefile.txt 0
