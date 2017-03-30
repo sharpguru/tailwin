@@ -7,7 +7,7 @@ Windows program for watching changes appended to files. Great for log files!
 - Add optional command line argument for skipping n lines (default 500)
 
 ## Installation
-- Download the latest release
+- Download the latest [release](https://github.com/sharpguru/tailwin/releases/latest)
 - Copy the folder into c:\windows\system32 or another directory in your path.
 - Rename the folder "tailwin" 
 - Create a shortcut to tailwin.exe on your desktop
