@@ -37,5 +37,5 @@ List last 50 lines of somefile.txt then display lines as the file is updated:
 tailwin somefile.txt 50
 ~~~
 
-## Want More
+## Want More ?
 Looking for a command line-only option? Check out [tail](https://github.com/sharpguru/tail)
