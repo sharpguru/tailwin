@@ -2,7 +2,7 @@
 Windows program for watching changes appended to files. Great for log files!
 
 ## Features:
-- Drag-drop files onto window service to start tailing
+- Drag-drop files to start tailing
 - Run from command line
 - Add optional command line argument for skipping n lines (default 500)
 
