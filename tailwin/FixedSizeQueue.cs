@@ -9,7 +9,7 @@ namespace tailwin
 {
     /// <summary>
     /// A queue with a maximum number of elements. Elements are dropped (dequeued) automatically when 
-    /// limit is exceeded. If no limit is set then FixedSizedQueue has no limit
+    /// limit is exceeded.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class FixedSizedQueue<T>
