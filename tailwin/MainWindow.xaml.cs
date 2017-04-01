@@ -28,7 +28,7 @@ namespace tailwin
     {
         private readonly BackgroundWorker worker = new BackgroundWorker();
 
-        private string _filename;
+        private string _filename; // the file to tail
         private string filename
         {
             get
@@ -42,9 +42,11 @@ namespace tailwin
                 this.Title = string.Format("tailing - {0}", value);
             }
         }
-        private bool Streaming = false;
-        private bool Stopped = true;
-        private int lastnlines = 500;
+        private bool Streaming = false; // this gets set to true when tailing a file. Set it to false to stop tailing 
+        private bool Stopped = true;    // indicates state of file tailing
+        private int lastnlines = 500;   // each file will skip output until the end is reached,
+                                        // then the lastnlines will be emitted
+                                        // lastnlines = 0 to show entire file contents
 
         public MainWindow()
         {
@@ -56,19 +58,24 @@ namespace tailwin
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1)
             {
-                filename = args[1];
+                filename = args[1]; // get filename from command line 
 
-                if (args.Length > 2)
+                if (args.Length > 2) // get lastnlines from command line
                 {
-                    int.TryParse(args[2], out lastnlines);
+                    int.TryParse(args[2], out lastnlines); 
                 }
 
-                worker.RunWorkerAsync();
+                worker.RunWorkerAsync(); // if command line options were passed in then start tailing
             }
 
             
         }
 
+        /// <summary>
+        /// Start background process to tail file
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void worker_DoWork(object sender, DoWorkEventArgs e)
         {
             Streaming = true;
@@ -76,6 +83,11 @@ namespace tailwin
             streamFileToOutput(filename, lastnlines);
         }
 
+        /// <summary>
+        /// Method fired when tailing ends 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             Stopped = true;
@@ -89,7 +101,7 @@ namespace tailwin
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
             {
-                if (Stopped)
+                if (Stopped) // should be stopped by the time this runs
                 {
                     filename = openFileDialog.FileName;
                     worker.RunWorkerAsync();
@@ -97,6 +109,11 @@ namespace tailwin
             }
         }
 
+        /// <summary>
+        /// Main method to start tailing a file
+        /// </summary>
+        /// <param name="filename">file to tail</param>
+        /// <param name="nlines">skip file and display the last n lines</param>
         private void streamFileToOutput(string filename = "", int nlines = 0)
         {
             try
@@ -104,46 +121,49 @@ namespace tailwin
                 Clear();
                 ShowOutput();
 
-                var wh = new AutoResetEvent(false);
-                var fsw = new FileSystemWatcher(".");
-                fsw.Filter = filename;
-                fsw.EnableRaisingEvents = true;
-                fsw.Changed += (s, e) => wh.Set();
-
-                var fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                using (var sr = new StreamReader(fs))
+                using (AutoResetEvent wh = new AutoResetEvent(false)) // wh is wait handle to notify main thread an event has occurred, e.g. the file has been updated
                 {
-                    var s = "";
-                    var q = new FixedSizedQueue<string>();
-                    if (nlines > 0) q.Limit = nlines;
+                    var fsw = new FileSystemWatcher(".");
+                    fsw.Filter = filename;
+                    fsw.EnableRaisingEvents = true;
+                    fsw.Changed += (s, e) => wh.Set();      // when file changes notify main thread
 
-                    while (Streaming)
+                    var fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                    using (var sr = new StreamReader(fs))
                     {
-                        s = sr.ReadLine();
-                        if (s != null)
+                        var s = "";
+                        var q = new FixedSizedQueue<string>(); 
+                        if (nlines > 0) q.Limit = nlines;
+
+                        while (Streaming) // main tail loop
                         {
-                            if (nlines > 0)
+                            s = sr.ReadLine(); // read next line in file or respond to change event
+                            if (s != null)
                             {
-                                // queue up!
-                                q.Enqueue(s);
-                            }
-                            else
-                            {
-                                AppendText(s + Environment.NewLine);
-                            }
-                        }
-                        else
-                        {
-                            if (nlines > 0)
-                            {
-                                // dequeue last lines
-                                while (q.TryDequeue(out s))
+                                if (nlines > 0) // still reading through initial file
                                 {
+                                    // queue up!
+                                    q.Enqueue(s);
+                                }
+                                else
+                                {
+                                    // write out text to output
                                     AppendText(s + Environment.NewLine);
                                 }
-                                nlines = 0;
                             }
-                            wh.WaitOne(1000);
+                            else // done reading through entire file
+                            {
+                                if (nlines > 0)
+                                {
+                                    // dequeue last lines
+                                    while (q.TryDequeue(out s))
+                                    {
+                                        AppendText(s + Environment.NewLine);
+                                    }
+                                    nlines = 0;
+                                }
+                                wh.WaitOne(1000);
+                            }
                         }
                     }
                 }
@@ -154,24 +174,37 @@ namespace tailwin
             }
         }
 
+        /// <summary>
+        /// Clear the output
+        /// </summary>
         private void Clear()
         {
+            // dispatcher will update ui thread when it's safe w/o blocking
             this.Dispatcher.Invoke(() =>
             {
                 txtOutput.Clear();
             });
         }
 
+        /// <summary>
+        /// Add text to output
+        /// </summary>
+        /// <param name="s"></param>
         private void AppendText(string s)
         {
+            // dispatcher will update ui thread when it's safe w/o blocking
             this.Dispatcher.Invoke(() =>
             {
                 txtOutput.AppendText(s);
             });
         }
 
+        /// <summary>
+        /// Show output and hide drag-drop controls
+        /// </summary>
         private void ShowOutput()
         {
+            // dispatcher will update ui thread when it's safe w/o blocking
             this.Dispatcher.Invoke(() =>
             {
                 DragDropBorder.Visibility = System.Windows.Visibility.Hidden;
@@ -181,14 +214,20 @@ namespace tailwin
 
         private void mainmenuExit_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            Application.Current.Shutdown(); // let's get out of here!
         }
 
+        /// <summary>
+        /// File drop handler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void File_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                // Note that you can have more than one file.
+                // Note that you can drop more than one file
+                // tailwin uses the first and ignores any others
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 filename = files[0];
                 worker.RunWorkerAsync();
