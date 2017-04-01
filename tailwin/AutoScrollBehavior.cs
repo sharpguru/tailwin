@@ -8,6 +8,9 @@ using System.Windows.Interactivity;
 
 namespace tailwin
 {
+    /// <summary>
+    /// Automatically scrolls to bottom of scrollviewer
+    /// </summary>
     public class AutoScrollBehavior : Behavior<ScrollViewer>
     {
         private ScrollViewer _scrollViewer = null;
