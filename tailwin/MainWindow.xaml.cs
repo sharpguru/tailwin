@@ -233,5 +233,10 @@ namespace tailwin
                 worker.RunWorkerAsync();
             }
         }
+
+        private void mainmenuClear_Click(object sender, RoutedEventArgs e)
+        {
+            Clear();
+        }
     }
 }

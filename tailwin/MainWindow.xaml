@@ -13,10 +13,15 @@
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <Menu x:Name="MainMenu">
-            <MenuItem Header="_File">
-                <MenuItem Header="_Open" Click="mainmenuOpen_Click" ></MenuItem>
-                <Separator />
-                <MenuItem Header="_Exit" Click="mainmenuExit_Click"></MenuItem>
+            <MenuItem Header="_Open" Click="mainmenuOpen_Click" >
+                <MenuItem.Icon>
+                    <Image Source="open.ico" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="_Clear" Click="mainmenuClear_Click" HorizontalAlignment="Right">
+                <MenuItem.Icon>
+                    <Image Source="cancel.ico" />
+                </MenuItem.Icon>
             </MenuItem>
         </Menu>
         <Border x:Name="DragDropBorder" Grid.Row="1" Grid.Column="1" BorderThickness="1,1,1,1" Margin="10" AllowDrop="True" Drop="File_Drop">
