@@ -93,19 +93,27 @@ namespace tailwin
             Stopped = true;
         }
 
-        private void mainmenuOpen_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Open file dialog and select a file to tail
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void mainmenuOpen_Click(object sender, RoutedEventArgs e)
         {
-            // Stop streaming current file
-            Streaming = false;
-
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
             {
-                if (Stopped) // should be stopped by the time this runs
+                // Stop streaming current file
+                Streaming = false;
+
+                while (!Stopped)
                 {
-                    filename = openFileDialog.FileName;
-                    worker.RunWorkerAsync();
+                    await Task.Delay(1000);
                 }
+
+                // should be stopped by the time this runs
+                filename = openFileDialog.FileName;
+                worker.RunWorkerAsync();
             }
         }
 
@@ -120,6 +128,7 @@ namespace tailwin
             {
                 Clear();
                 ShowOutput();
+                Remember(filename);
 
                 using (AutoResetEvent wh = new AutoResetEvent(false)) // wh is wait handle to notify main thread an event has occurred, e.g. the file has been updated
                 {
@@ -171,6 +180,19 @@ namespace tailwin
             catch (Exception ex)
             {
                 Console.WriteLine("Error: " + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Save filename 
+        /// </summary>
+        /// <param name="filename"></param>
+        private void Remember(string filename)
+        {
+            if (!string.IsNullOrEmpty(filename))
+            {
+                Properties.Settings.Default.lastfilename = filename;
+                Properties.Settings.Default.Save();
             }
         }
 
@@ -237,6 +259,26 @@ namespace tailwin
         private void mainmenuClear_Click(object sender, RoutedEventArgs e)
         {
             Clear();
+        }
+
+        private async void mainmenuRecent_Click(object sender, RoutedEventArgs e)
+        {
+            string recent = Properties.Settings.Default.lastfilename;
+
+            if (!string.IsNullOrEmpty(recent))
+            {
+                // Stop streaming current file
+                Streaming = false;
+
+                while (!Stopped)
+                {
+                    await Task.Delay(1000);
+                }
+
+                // should be stopped by the time this runs
+                filename = Properties.Settings.Default.lastfilename;
+                worker.RunWorkerAsync();
+            }
         }
     }
 }

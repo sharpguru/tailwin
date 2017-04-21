@@ -23,6 +23,11 @@
                     <Image Source="cancel.ico" />
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem Header="_Recent" Click="mainmenuRecent_Click" >
+                <MenuItem.Icon>
+                    <Image Source="open.ico" />
+                </MenuItem.Icon>
+            </MenuItem>
         </Menu>
         <Border x:Name="DragDropBorder" Grid.Row="1" Grid.Column="1" BorderThickness="1,1,1,1" Margin="10" AllowDrop="True" Drop="File_Drop">
             <Border.BorderBrush>
