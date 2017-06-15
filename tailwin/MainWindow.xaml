@@ -4,6 +4,18 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:local="clr-namespace:tailwin"
         Title="Tailwin" Height="350" Width="525">
+    <Window.Resources>
+        <RoutedCommand x:Key="Find_Executed"/>
+        <RoutedCommand x:Key="Find_Next_Executed"/>
+    </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="{StaticResource Find_Executed}" Executed="Find_Executed"/>
+        <CommandBinding Command="{StaticResource Find_Next_Executed}" Executed="Find_Next_Executed"/>
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Key="F" Modifiers="control" Command="{StaticResource Find_Executed}"/>
+        <KeyBinding Key="F3" Command="{StaticResource Find_Next_Executed}"/>
+    </Window.InputBindings>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
@@ -23,9 +35,14 @@
                     <Image Source="cancel.ico" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="_Recent" Click="mainmenuRecent_Click" >
+            <MenuItem Header="_Last" Click="mainmenuRecent_Click" >
                 <MenuItem.Icon>
                     <Image Source="open.ico" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="_Find" Click="mainmenuFind_Click" >
+                <MenuItem.Icon>
+                    <Image Source="binoculars.ico" />
                 </MenuItem.Icon>
             </MenuItem>
         </Menu>

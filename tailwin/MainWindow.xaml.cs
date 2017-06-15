@@ -48,9 +48,15 @@ namespace tailwin
                                         // then the lastnlines will be emitted
                                         // lastnlines = 0 to show entire file contents
 
+        public FindWindow FindDialog;
         public MainWindow()
         {
             InitializeComponent();
+
+            FindDialog = new FindWindow();
+            FindDialog.Search += FindDialog_Search;
+
+            this.Closing += MainWindow_Closing;
 
             worker.DoWork += worker_DoWork;
             worker.RunWorkerCompleted += worker_RunWorkerCompleted;
@@ -69,6 +75,17 @@ namespace tailwin
             }
 
             
+        }
+
+        private void FindDialog_Search()
+        {
+            FindNextSearchMatch();
+        }
+
+        private void MainWindow_Closing(object sender, CancelEventArgs e)
+        {
+            FindDialog.AllowClose = true;
+            FindDialog.Close();
         }
 
         /// <summary>
@@ -278,6 +295,81 @@ namespace tailwin
                 // should be stopped by the time this runs
                 filename = Properties.Settings.Default.lastfilename;
                 worker.RunWorkerAsync();
+            }
+        }
+
+        private void mainmenuFind_Click(object sender, RoutedEventArgs e)
+        {
+            FindDialog.Show();
+            FindDialog.Activate();
+        }
+
+        private void Find_Executed(object sender, RoutedEventArgs e)
+        {
+            FindDialog.Show();
+            FindDialog.Activate();
+        }
+
+        private void Find_Executed(object sender, EventArgs e)
+        {
+            FindDialog.Show();
+            FindDialog.Activate();
+        }
+
+        private void Find_Next_Executed(object sender, EventArgs e)
+        {
+            FindNextSearchMatch();
+        }
+
+        /// <summary>
+        /// Finds next match. This happens after a user uses ctrl-F to find something then presses F3 for finding the next match
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Find_Next_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            FindNextSearchMatch();
+        }
+
+        private void FindNextSearchMatch()
+        {
+            int start = txtOutput.SelectionStart + txtOutput.SelectionLength;
+            string searchstring = FindDialog.txtFind.Text;
+            int found = 0;
+            int index = 0;
+            bool Done = false;
+
+            while (!Done)
+            {
+                string searchtarget = txtOutput.Text.Substring(start);
+                found = searchtarget.IndexOf(searchstring, 0, StringComparison.InvariantCultureIgnoreCase);
+
+                if (found > -1)
+                {
+                    // text found!
+                    index = found + start;
+                    txtOutput.Focus();
+                    txtOutput.Select(index, searchstring.Length);
+                    txtOutput.ScrollToLine(txtOutput.GetLineIndexFromCharacterIndex(index));
+
+                    txtOutput.SelectionBrush = Brushes.Blue;
+                    txtOutput.SelectionOpacity = 0.5;
+
+                    Done = true;
+                }
+                else
+                {
+                    if (start == 0)
+                    {
+                        // Text not found anywhere! We're done
+                        Done = true;
+                    }
+                    else
+                    {
+                        // Search from the beginning
+                        start = 0;
+                    }
+                }
             }
         }
     }
