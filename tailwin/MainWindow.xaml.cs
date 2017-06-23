@@ -300,20 +300,27 @@ namespace tailwin
 
         private void mainmenuFind_Click(object sender, RoutedEventArgs e)
         {
-            FindDialog.Show();
-            FindDialog.Activate();
+            ShowFindDialog();
         }
 
         private void Find_Executed(object sender, RoutedEventArgs e)
         {
-            FindDialog.Show();
-            FindDialog.Activate();
+            ShowFindDialog();
         }
 
         private void Find_Executed(object sender, EventArgs e)
         {
-            FindDialog.Show();
-            FindDialog.Activate();
+            ShowFindDialog();
+        }
+
+        private void ShowFindDialog()
+        {
+            // dispatcher will update ui thread when it's safe w/o blocking
+            this.Dispatcher.Invoke(() =>
+            {
+                FindDialog.Show();
+                FindDialog.Activate();
+            });
         }
 
         private void Find_Next_Executed(object sender, EventArgs e)
@@ -348,12 +355,17 @@ namespace tailwin
                 {
                     // text found!
                     index = found + start;
-                    txtOutput.Focus();
-                    txtOutput.Select(index, searchstring.Length);
-                    txtOutput.ScrollToLine(txtOutput.GetLineIndexFromCharacterIndex(index));
 
-                    txtOutput.SelectionBrush = Brushes.Blue;
-                    txtOutput.SelectionOpacity = 0.5;
+                    // dispatcher will update ui thread when it's safe w/o blocking
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        txtOutput.Focus();
+                        txtOutput.Select(index, searchstring.Length);
+                        txtOutput.ScrollToLine(txtOutput.GetLineIndexFromCharacterIndex(index));
+
+                        txtOutput.SelectionBrush = Brushes.Blue;
+                        txtOutput.SelectionOpacity = 0.5;
+                    });
 
                     Done = true;
                 }
